@@ -1,0 +1,6 @@
+config.yaml
+*.token
+*token.txt
+__pycache__/
+*.pyc
+.DS_Store

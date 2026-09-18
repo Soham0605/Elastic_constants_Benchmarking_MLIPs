@@ -1,0 +1,56 @@
+# config.example.yaml
+#
+# Copy this file to config.yaml and fill in YOUR values. config.yaml is
+# gitignored -- it's meant to hold cluster paths, your username, and
+# (indirectly) secrets, so it should never be committed.
+#
+#   cp config.example.yaml config.yaml
+#   python configure.py --check     # validates everything below actually exists
+#
+# Every script in this toolkit reads from config.yaml. Nothing cluster-
+# specific is hardcoded in the Python -- this file is the one place all of
+# that lives.
+
+cluster:
+  scheduler: slurm          # only slurm is supported right now (see README)
+  account: null              # SLURM --account; leave null if your cluster doesn't use one
+  qos: null                  # SLURM --qos; leave null if not applicable
+  partition: null            # SLURM --partition; leave null if using qos instead
+  constraint: null           # SLURM --constraint (e.g. a specific OS/node generation); usually null
+
+  # Resource requests. Elastic-constant DFT (IBRION=6, ISIF=3) is a single
+  # calculation, but a relatively expensive one (finite-difference over many
+  # displacements) -- give it real wall time.
+  dft:
+    ntasks: 16
+    mem: "64G"
+    time: "48:00:00"
+  mlip:
+    ntasks: 1
+    cpus_per_task: 8
+    mem: "64G"
+    time: "24:00:00"
+
+user:
+  username: null              # your cluster username (used in default paths, job names)
+  email: null                 # for #SBATCH --mail-user; leave null to disable email notifications
+
+vasp:
+  executable: null            # absolute path to your vasp_std (or vasp_gam / vasp_ncl) binary
+  module_loads: []            # e.g. [intel/2025.1.0, openmpi/5.0.7, hdf5/1.14.6] -- run before VASP
+
+mlip:
+  conda_init_script: null     # path to conda.sh, e.g. /home/<you>/miniconda3/etc/profile.d/conda.sh
+  envs:                       # conda environment name for each potential you have installed
+    chgnet: chgnet
+    m3gnet: m3gnet
+    mattersim: mattersim
+    orb_v3: orb_v3
+    esen: esen
+
+  # Only eSEN/UMA needs anything here -- chgnet, m3gnet, mattersim, and
+  # orb_v3 all auto-download their weights from public sources, no
+  # authentication required. See README.md "MLIP requirements" for details.
+  esen:
+    hf_token_file: null       # path to a private (chmod 600) file containing just your HF token
+    checkpoint: null          # absolute path to the UMA .pt checkpoint file
